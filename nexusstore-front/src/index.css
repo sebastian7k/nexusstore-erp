@@ -1,0 +1,24 @@
+/* Reset básico da página */
+* {
+  box-sizing: border-box;
+}
+
+/* Configuração global */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Remove estilo padrão dos botões e inputs */
+button,
+input {
+  font-family: inherit;
+}
+
+/* Evita barra branca lateral */
+body {
+  overflow-x: hidden;
+}
