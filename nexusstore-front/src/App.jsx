@@ -8,15 +8,14 @@ import {
   Pencil,
   Trash2,
   RefreshCcw,
-  Store
+  Store,
 } from "lucide-react";
 import "./App.css";
 
 // Configuração da API
 const api = axios.create({
-  baseURL: "http://localhost:3000"
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
 });
-
 // Configuração dos módulos
 const entidades = {
   clientes: {
@@ -28,9 +27,9 @@ const entidades = {
       { nome: "nome", label: "Nome", tipo: "text" },
       { nome: "email", label: "E-mail", tipo: "email" },
       { nome: "telefone", label: "Telefone", tipo: "text" },
-      { nome: "cpf", label: "CPF", tipo: "text" }
+      { nome: "cpf", label: "CPF", tipo: "text" },
     ],
-    colunas: ["id", "nome", "email", "telefone", "cpf"]
+    colunas: ["id", "nome", "email", "telefone", "cpf"],
   },
 
   funcionarios: {
@@ -43,9 +42,9 @@ const entidades = {
       { nome: "telefone", label: "Telefone", tipo: "text" },
       { nome: "email", label: "E-mail", tipo: "email" },
       { nome: "cargo", label: "Cargo", tipo: "text" },
-      { nome: "setor", label: "Setor", tipo: "text" }
+      { nome: "setor", label: "Setor", tipo: "text" },
     ],
-    colunas: ["id", "nome", "telefone", "email", "cargo", "setor"]
+    colunas: ["id", "nome", "telefone", "email", "cargo", "setor"],
   },
 
   produtos: {
@@ -57,10 +56,10 @@ const entidades = {
       { nome: "nome", label: "Nome do produto", tipo: "text" },
       { nome: "lote", label: "Lote", tipo: "text" },
       { nome: "quantidade", label: "Quantidade", tipo: "number" },
-      { nome: "preco", label: "Preço", tipo: "number" }
+      { nome: "preco", label: "Preço", tipo: "number" },
     ],
-    colunas: ["id", "nome", "lote", "quantidade", "preco"]
-  }
+    colunas: ["id", "nome", "lote", "quantidade", "preco"],
+  },
 };
 
 function App() {
@@ -78,48 +77,46 @@ function App() {
 
   // Busca registros na API
   const carregarDados = useCallback(async () => {
-  try {
-    setCarregando(true);
+    try {
+      setCarregando(true);
 
-    const resposta = await api.get(entidadeAtual.rota);
-    setDados(resposta.data);
-  } catch {
-    setMensagem("Erro ao carregar dados da API.");
-  } finally {
-    setCarregando(false);
-  }
-
-}, [entidadeAtual.rota]);
+      const resposta = await api.get(entidadeAtual.rota);
+      setDados(resposta.data);
+    } catch {
+      setMensagem("Erro ao carregar dados da API.");
+    } finally {
+      setCarregando(false);
+    }
+  }, [entidadeAtual.rota]);
 
   // Carrega dados ao trocar módulo
-useEffect(() => {
-  let componenteAtivo = true;
+  useEffect(() => {
+    let componenteAtivo = true;
 
-  async function buscarDadosIniciais() {
-    try {
-      const resposta = await api.get(entidadeAtual.rota);
+    async function buscarDadosIniciais() {
+      try {
+        const resposta = await api.get(entidadeAtual.rota);
 
-      if (componenteAtivo) {
-        setDados(resposta.data);
-      }
-    } catch {
-      if (componenteAtivo) {
-        setMensagem("Erro ao carregar dados da API.");
-      }
-    } finally {
-      if (componenteAtivo) {
-        setCarregando(false);
+        if (componenteAtivo) {
+          setDados(resposta.data);
+        }
+      } catch {
+        if (componenteAtivo) {
+          setMensagem("Erro ao carregar dados da API.");
+        }
+      } finally {
+        if (componenteAtivo) {
+          setCarregando(false);
+        }
       }
     }
-  }
 
-  buscarDadosIniciais();
+    buscarDadosIniciais();
 
-  return () => {
-    componenteAtivo = false;
-  };
-}, [entidadeAtual.rota]);
-
+    return () => {
+      componenteAtivo = false;
+    };
+  }, [entidadeAtual.rota]);
 
   // Troca aba e limpa formulário
   function trocarAba(chave) {
@@ -134,7 +131,7 @@ useEffect(() => {
   function atualizarCampo(campo, valor) {
     setFormulario({
       ...formulario,
-      [campo]: valor
+      [campo]: valor,
     });
   }
 
@@ -186,7 +183,7 @@ useEffect(() => {
   // Exclui registro
   async function excluirRegistro(id) {
     const confirmar = window.confirm(
-      "Tem certeza que deseja excluir este registro?"
+      "Tem certeza que deseja excluir este registro?",
     );
 
     if (!confirmar) return;
@@ -230,7 +227,9 @@ useEffect(() => {
             return (
               <button
                 key={chave}
-                className={abaAtiva === chave ? "menu-item active" : "menu-item"}
+                className={
+                  abaAtiva === chave ? "menu-item active" : "menu-item"
+                }
                 onClick={() => trocarAba(chave)}
               >
                 <Icone size={20} />
