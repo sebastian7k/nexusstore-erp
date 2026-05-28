@@ -26,6 +26,42 @@ function validarCampos(body, campos) {
   });
 }
 
+async function inicializarBanco() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS clientes (
+      id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+      nome VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL,
+      telefone VARCHAR(20) NOT NULL,
+      cpf VARCHAR(20) NOT NULL,
+      criando_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS funcionarios (
+      id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+      nome VARCHAR(150) NOT NULL,
+      telefone VARCHAR(30) NOT NULL,
+      email VARCHAR(150) NOT NULL,
+      cargo VARCHAR(100) NOT NULL,
+      setor VARCHAR(100) NOT NULL,
+      criando_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS produtos (
+      id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+      nome VARCHAR(150) NOT NULL,
+      lote VARCHAR(50) NOT NULL,
+      quantidade INTEGER NOT NULL,
+      preco DECIMAL(10, 2) NOT NULL,
+      criando_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+}
+
 app.get("/", (req, res) => {
   res.status(200).json({
     mensagem: "API REST da NexusStore funcionando com Node.js e PostgreSQL",
@@ -455,6 +491,13 @@ app.delete("/produtos/:id", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
+inicializarBanco()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Servidor rodando em http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Erro ao inicializar banco:", error);
+    process.exit(1);
+  });
