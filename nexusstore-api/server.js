@@ -32,6 +32,27 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/health", async (req, res) => {
+  try {
+    await pool.query("SELECT 1");
+
+    res.status(200).json({
+      status: "ok",
+      api: "online",
+      banco: "conectado",
+    });
+  } catch (error) {
+    console.error("Erro no health check:", error);
+
+    res.status(500).json({
+      status: "erro",
+      api: "online",
+      banco: "erro ao conectar",
+      detalhe: error.message,
+    });
+  }
+});
+
 /* 
    CLIENTES
  */
